@@ -36,7 +36,7 @@ function Analytics() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/transactions",
+        "https://expense-tracker-mern-pytb.onrender.com/api/transactions",
         {
           headers: {
             Authorization: `Bearer ${token}`,

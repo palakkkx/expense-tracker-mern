@@ -64,7 +64,7 @@ function AddExpenseModal({
 
       if (editData) {
         await axios.put(
-          `http://localhost:5000/api/transactions/${editData._id}`,
+          `https://expense-tracker-mern-pytb.onrender.com/api/transactions/${editData._id}`,
           {
             ...form,
             amount: Number(form.amount),
@@ -79,7 +79,7 @@ function AddExpenseModal({
         alert("Transaction Updated Successfully");
       } else {
         await axios.post(
-          "http://localhost:5000/api/transactions",
+          "https://expense-tracker-mern-pytb.onrender.com/api/transactions",
           {
             ...form,
             amount: Number(form.amount),
