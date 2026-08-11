@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-function AddExpenseModal({ isOpen, onClose, onAdd }) {
+function AddExpenseModal({
+  isOpen,
+  onClose,
+  onAdd,
+  editData,
+}) {
   const [form, setForm] = useState({
     title: "",
     amount: "",
@@ -8,6 +14,28 @@ function AddExpenseModal({ isOpen, onClose, onAdd }) {
     type: "expense",
     date: "",
   });
+
+  useEffect(() => {
+    if (editData) {
+      setForm({
+        title: editData.title,
+        amount: editData.amount,
+        category: editData.category,
+        type: editData.type,
+        date: editData.date
+          ? editData.date.substring(0, 10)
+          : "",
+      });
+    } else {
+      setForm({
+        title: "",
+        amount: "",
+        category: "",
+        type: "expense",
+        date: "",
+      });
+    }
+  }, [editData, isOpen]);
 
   if (!isOpen) return null;
 
@@ -18,15 +46,7 @@ function AddExpenseModal({ isOpen, onClose, onAdd }) {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    onAdd({
-      id: Date.now(),
-      ...form,
-      amount: Number(form.amount),
-    });
-
+  const resetForm = () => {
     setForm({
       title: "",
       amount: "",
@@ -34,21 +54,76 @@ function AddExpenseModal({ isOpen, onClose, onAdd }) {
       type: "expense",
       date: "",
     });
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (editData) {
+        await axios.put(
+          `http://localhost:5000/api/transactions/${editData._id}`,
+          {
+            ...form,
+            amount: Number(form.amount),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        alert("Transaction Updated Successfully");
+      } else {
+        await axios.post(
+          "http://localhost:5000/api/transactions",
+          {
+            ...form,
+            amount: Number(form.amount),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        alert("Transaction Added Successfully");
+      }
+
+      resetForm();
+      await onAdd();
+    } catch (error) {
+      console.error(error);
+      alert(
+        error.response?.data?.message ||
+          "Something went wrong"
+      );
+    }
+  };
+
+  const handleCancel = () => {
+    resetForm();
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-white w-full max-w-md rounded-xl p-6">
 
         <h2 className="text-2xl font-bold mb-6">
-          Add Transaction
+          {editData
+            ? "Edit Transaction"
+            : "Add Transaction"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           <input
             name="title"
             placeholder="Title"
@@ -83,8 +158,12 @@ function AddExpenseModal({ isOpen, onClose, onAdd }) {
             onChange={handleChange}
             className="w-full border p-3 rounded-lg"
           >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
+            <option value="expense">
+              Expense
+            </option>
+            <option value="income">
+              Income
+            </option>
           </select>
 
           <input
@@ -97,28 +176,25 @@ function AddExpenseModal({ isOpen, onClose, onAdd }) {
           />
 
           <div className="flex gap-4">
-
             <button
               type="submit"
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg"
+              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
             >
-              Add
+              {editData ? "Update" : "Add"}
             </button>
 
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-300 py-3 rounded-lg"
+              onClick={handleCancel}
+              className="flex-1 bg-gray-300 py-3 rounded-lg hover:bg-gray-400"
             >
               Cancel
             </button>
-
           </div>
 
         </form>
 
       </div>
-
     </div>
   );
 }

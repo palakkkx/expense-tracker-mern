@@ -1,4 +1,9 @@
-import { Pencil, Trash2, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 
 function TransactionCard({
   title,
@@ -7,13 +12,13 @@ function TransactionCard({
   type,
   date,
   onDelete,
+  onEdit,
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100">
 
       <div className="flex justify-between items-center">
 
-        {/* Left Section */}
         <div className="flex items-center gap-4">
 
           <div
@@ -24,9 +29,15 @@ function TransactionCard({
             }`}
           >
             {type === "income" ? (
-              <ArrowUpRight className="text-green-600" size={22} />
+              <ArrowUpRight
+                className="text-green-600"
+                size={22}
+              />
             ) : (
-              <ArrowDownRight className="text-red-600" size={22} />
+              <ArrowDownRight
+                className="text-red-600"
+                size={22}
+              />
             )}
           </div>
 
@@ -48,7 +59,6 @@ function TransactionCard({
 
         </div>
 
-        {/* Right Section */}
         <div className="flex items-center gap-5">
 
           <h2
@@ -61,15 +71,24 @@ function TransactionCard({
             {type === "income" ? "+" : "-"} ₹{amount}
           </h2>
 
-          <button className="p-2 rounded-lg hover:bg-blue-100 transition">
-            <Pencil size={20} className="text-blue-600" />
+          <button
+            onClick={onEdit}
+            className="p-2 rounded-lg hover:bg-blue-100 transition"
+          >
+            <Pencil
+              size={20}
+              className="text-blue-600"
+            />
           </button>
 
           <button
             onClick={onDelete}
             className="p-2 rounded-lg hover:bg-red-100 transition"
           >
-            <Trash2 size={20} className="text-red-600" />
+            <Trash2
+              size={20}
+              className="text-red-600"
+            />
           </button>
 
         </div>

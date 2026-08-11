@@ -5,9 +5,18 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/");
+  };
+
   const linkStyle =
     "flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition";
 
@@ -15,13 +24,13 @@ function Sidebar() {
     "bg-blue-600 text-white shadow-lg";
 
   return (
-    <aside className="w-72 bg-white border-r border-gray-200 min-h-screen p-6">
+    <aside className="w-72 bg-white border-r border-gray-200 min-h-screen p-6 flex flex-col">
 
       <h1 className="text-3xl font-bold text-blue-600 mb-10">
         💰 Expense Tracker
       </h1>
 
-      <nav className="space-y-3">
+      <nav className="space-y-3 flex-1">
 
         <NavLink
           to="/dashboard"
@@ -65,7 +74,10 @@ function Sidebar() {
 
       </nav>
 
-      <button className="absolute bottom-8 flex items-center gap-3 text-red-500 hover:text-red-700">
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-3 text-red-500 hover:text-red-700 font-semibold"
+      >
         <LogOut size={22} />
         Logout
       </button>
